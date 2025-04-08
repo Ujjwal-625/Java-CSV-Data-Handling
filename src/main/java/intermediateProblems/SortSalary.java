@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class SortSalary {
@@ -29,11 +30,18 @@ public class SortSalary {
     static void sortSalary(){
         try(CSVReader reader =new CSVReader(new FileReader("Employee.csv"))){
 
-            List<String []> allrecords=new ArrayList<>();
-            String []line;
-            while((line=reader.readNext())!=null){
+            List<String[]> allRecords=new ArrayList<>();
+            String[] header = reader.readNext();
+            allRecords.add(header);
+            List<String[]> employeeData = new ArrayList<>();
 
+            String[] line;
+            while ((line = reader.readNext()) != null) {
+                employeeData.add(line);
             }
+
+            employeeData.sort(Comparator.comparingDouble(o -> Double.parseDouble(o[3])));
+            allRecords.addAll(employeeData);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
