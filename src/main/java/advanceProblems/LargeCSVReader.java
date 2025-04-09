@@ -3,37 +3,40 @@ package advanceProblems;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
 public class LargeCSVReader {
     public static void main(String[] args) {
-        try(CSVReader reader=new CSVReader(new FileReader("src/main/java/advanceProblems/students_large.csv"))){
-            int batchsize=100;
-            int totalRecords=0;
-            reader.readNext();
-            String [] line;
+        try (CSVReader reader = new CSVReader(new FileReader("src/main/java/advanceProblems/students_large.csv"))) {
+            int batchSize = 0;
+            int totalRecords = 0;
 
-            while((line=reader.readNext())!=null){
-                batchsize++;
+            reader.readNext(); // Skip header
+            String[] line;
+
+            while ((line = reader.readNext()) != null) {
                 totalRecords++;
+                batchSize++;
 
+                // Print the record
+                System.out.println(String.join(", ", line));
 
-                for (String record :line) {
-                    System.out.println(String.join(", ", record));
-                }
-
-                if(batchsize==100){
-                    batchsize=0;
+                // If we have processed 100 records, wait for 5 seconds
+                if (batchSize == 100) {
+                    System.out.println("\nProcessed " + totalRecords + " records so far. Pausing for 5 seconds...\n");
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        System.out.println("Thread interrupted: " + e.getMessage());
+                    };
+                    batchSize = 0; // Reset batch count after waiting
                 }
             }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (CsvValidationException e) {
-            throw new RuntimeException(e);
+
+            System.out.println("\nTotal Records Processed: " + totalRecords);
+        } catch (IOException | CsvValidationException e) {
+            e.printStackTrace();
         }
     }
 }
